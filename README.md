@@ -78,3 +78,15 @@ This project is a web application for managing users, including searching, listi
 - AlbumFetcher: Fetches album data from the JSONPlaceholder API and saves it to the database.
 - PhotoFetcher: Fetches photo data from the JSONPlaceholder API and saves it to the database.
 
+
+
+![Alt text](screenshots\index.PNG)
+![Alt text](screenshots\index2.PNG)
+![Alt text](screenshots\index3.PNG)
+![Alt text](screenshots\index4.PNG)
+![Alt text](screenshots\edit.PNG)
+![Alt text](screenshots\useredit.PNG)
+![Alt text](screenshots\useredit2.PNG)
+![Alt text](screenshots\useredit3.PNG)
+![Alt text](screenshots\albums.PNG)
+
