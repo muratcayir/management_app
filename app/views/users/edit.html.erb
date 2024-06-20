@@ -1,0 +1,106 @@
+<div class="container mx-auto px-4 py-6">
+  <div class="flex">
+    <div class="w-1/3 bg-white shadow-md rounded-lg p-4 overflow-y-auto">
+      <button onclick="openEditModal()" class="mt-4 px-4 py-2 rounded-lg">✎</button>
+      <img src="https://picsum.photos/id/<%= @user.id %>/100/100" class="w-24 h-24 rounded-full mx-auto mb-4" alt="User Photo">
+      <h2 class="text-xl font-bold text-center"><%= @user.name %></h2>
+      <p class="text-center text-gray-500">@<%= @user.username %></p>
+      <p class="mt-4"><strong>Email:</strong> <%= @user.email %></p>
+      <p class="mt-2"><strong>Telefon:</strong> <%= @user.phone %></p>
+      <p class="mt-2"><strong>Adres:</strong> Lorem Ipsum is simply dummy text of the printing and typesetting industry.</p>
+    </div>
+    <div class="w-2/3 ml-4 bg-white shadow-md rounded-lg p-4">
+      <h2 class="text-xl font-bold mb-4">Albüm Listesi</h2>
+      <div id="albums" class="max-h-96 overflow-y-auto">
+        <% @albums.each do |album| %>
+          <div class="flex items-center mb-4 p-2 border rounded-lg cursor-pointer" data-album-id="<%= album.id %>" onclick="showAlbumDetails(<%= album.id %>)">
+            <img src="https://picsum.photos/id/<%= album.id %>/50/50" class="w-12 h-12 rounded-full mr-4" alt="Album Photo">
+            <div>
+              <p class="text-gray-800 font-semibold"><%= album.title %></p>
+            </div>
+          </div>
+        <% end %>
+      </div>
+      <div class="mt-4">
+        <%= paginate @albums %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Edit User Modal -->
+<div id="editModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
+  <div class="bg-white shadow-lg rounded-lg p-6 max-w-lg w-full relative">
+    <div class="flex justify-between items-center mb-4">
+      <h3 class="text-2xl font-bold text-gray-800">Kullanıcı Bilgilerini Düzenle</h3>
+      <button onclick="closeEditModal()" class="text-gray-500 hover:text-gray-700 transition duration-200 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-400 p-1">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+    </div>
+    <div id="editFormContainer">
+      <!-- Form will be loaded here -->
+    </div>
+  </div>
+</div>
+
+<!-- Album Details Modal -->
+<div id="albumModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
+  <div class="bg-white shadow-md rounded-lg p-4 max-w-lg w-full max-h-screen overflow-y-auto">
+    <div class="flex justify-between items-center mb-4">
+      <h3 class="text-xl font-bold">Album Detayları</h3>
+      <button onclick="closeAlbumDetails()" class="text-gray-500">&times;</button>
+    </div>
+    <div id="albumDetails" class="space-y-4"></div>
+  </div>
+</div>
+
+<script>
+  function openEditModal() {
+    document.getElementById('editModal').classList.remove('hidden');
+    const token = document.querySelector('meta[name="csrf-token"]').content;
+    fetch('<%= edit_user_path(@user.username, format: :js) %>', {
+      method: 'GET',
+      headers: {
+        'X-CSRF-Token': token,
+        'Accept': 'text/javascript'
+      }
+    })
+    .then(response => response.text())
+    .then(html => {
+      document.getElementById('editFormContainer').innerHTML = html;
+    });
+  }
+
+  function closeEditModal() {
+    document.getElementById('editModal').classList.add('hidden');
+  }
+
+  function showAlbumDetails(albumId) {
+    fetch(`/albums/${albumId}.json`)
+      .then(response => response.json())
+      .then(data => {
+        const albumDetails = document.getElementById('albumDetails');
+        albumDetails.innerHTML = `
+          <img src="https://picsum.photos/id/${data.album.id}/100/100" class="w-24 h-24 rounded-full mx-auto mb-4" alt="Album Photo">
+          <p><strong>Başlık:</strong> ${data.album.title}</p>
+          <p><strong>Albüm Bağlantısı:</strong> <a href="https://via.placeholder.com/${data.album.id}" class="text-blue-500">https://via.placeholder.com/${data.album.id}</a></p>
+          <h4 class="text-lg font-bold mt-4">Fotoğraflar</h4>
+          <div class="grid grid-cols-2 gap-4">
+            ${data.photos.map(photo => `
+              <div class="flex flex-col items-center">
+                <img src="${photo.thumbnail_url}" class="w-full rounded-lg mb-2" alt="Photo Thumbnail">
+                <p class="text-gray-600 text-sm text-center">${photo.title}</p>
+              </div>
+            `).join('')}
+          </div>
+        `;
+        document.getElementById('albumModal').classList.remove('hidden');
+      });
+  }
+
+  function closeAlbumDetails() {
+    document.getElementById('albumModal').classList.add('hidden');
+  }
+</script>

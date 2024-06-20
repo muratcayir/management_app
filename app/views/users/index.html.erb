@@ -1,0 +1,29 @@
+<div class="mb-6">
+  <%= form_with url: search_users_path, method: :get, local: true, class: "flex items-center bg-white shadow-md rounded-full px-4 py-2", id: "search_form" do %>
+   <%= text_field_tag :query, params[:query], placeholder: "Kullanıcı ara", class: "flex-grow px-4 py-2 text-gray-700 focus:outline-none", id: "search_input" %>
+    <%= link_to '✕', users_path, class: "ml-2 text-gray-500", id: "clear_search" %>
+  <% end %>
+</div>
+
+<div class="bg-white shadow-md rounded-lg overflow-hidden">
+  <div id="users_list">
+    <% if @users.any? %>
+      <% @users.each do |user| %>
+        <div class="flex items-center px-4 py-2 border-b border-gray-200">
+          <img src="https://picsum.photos/id/<%= user.id %>/50/50" class="w-12 h-12 rounded-full mr-4" alt="User Photo">
+          <div class="flex-grow">
+            <p class="text-gray-800 font-semibold"><%= user.name %></p>
+            <p class="text-gray-500"><%= user.username %></p>
+          </div>
+          <%= link_to '✎', edit_user_path(user.username), class: "text-gray-500 ml-4" %>
+        </div>
+      <% end %>
+      <div class="px-4 py-2">
+        <%= paginate @users %>
+      </div>
+    <% end %>
+  </div>
+  <div class="px-4 py-2" id="no_user_found" style="display: none;">
+    <p class="text-gray-500">Kullanıcı Bulunamadı!</p>
+  </div>
+</div>
